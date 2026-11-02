@@ -1,0 +1,9 @@
+# 보너스 1: 단일 서비스 Compose
+# docker run -d --name web -p 8080:80 codyssey-web  ← 이 명령을 "문서화된 설정"으로 옮긴 것
+services:
+  web:
+    build: ../app            # ../app/Dockerfile 로 이미지 빌드
+    image: codyssey-web:compose
+    container_name: compose-web
+    ports:
+      - "${WEB_PORT:-8080}:80"   # 보너스 4: 환경 변수로 호스트 포트 변경 (기본 8080)

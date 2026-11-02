@@ -1,0 +1,17 @@
+# 보너스 2: 멀티 컨테이너 Compose — 웹 서버 + Redis(보조 서비스)
+# 같은 compose 프로젝트의 서비스들은 자동으로 같은 네트워크에 묶이고,
+# 서비스 이름(web, cache)이 곧 호스트 이름이 된다 (서비스 디스커버리).
+services:
+  web:
+    build: ../app
+    image: codyssey-web:multi
+    container_name: multi-web
+    ports:
+      - "8081:80"
+    depends_on:
+      - cache
+
+  cache:
+    image: redis:7-alpine
+    container_name: multi-cache
+    # 호스트에 포트를 열지 않음 → 외부에서는 접근 불가, 컨테이너끼리만 통신

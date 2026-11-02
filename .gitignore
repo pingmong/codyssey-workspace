@@ -1,0 +1,9 @@
+# 환경 변수 (실제 값은 커밋하지 않음)
+.env
+
+# macOS
+.DS_Store
+
+# 실습 중 생긴 임시 파일
+scratch/
+*.tmp

@@ -1,0 +1,25 @@
+### 바인드 마운트 반영 (2026-11-02 14:34)
+## 호스트의 app/ 폴더를 컨테이너의 /usr/share/nginx/html 에 연결
+$ docker run -d --name web-bind -p 8080:80 -v "$(pwd)/app:/usr/share/nginx/html:ro" nginx:alpine
+5c82988921e201000f7bc65f17dc50e436babadee03ad3d6edd5e9d11e518186
+
+$ sleep 2; echo '## [변경 전] 호스트 파일의 badge:'; grep -o 'class="badge">[^<]*' app/index.html
+## [변경 전] 호스트 파일의 badge:
+class="badge">v1
+
+$ curl -s http://localhost:8080 | grep -o 'class="badge">[^<]*'
+class="badge">v1
+
+$ sed -i '' 's/class="badge">v1/class="badge">v2-bind-mount/' app/index.html
+
+$ echo '## [변경 후] 호스트 파일 수정 → 컨테이너 재시작 없이 즉시 반영'
+## [변경 후] 호스트 파일 수정 → 컨테이너 재시작 없이 즉시 반영
+
+$ curl -s http://localhost:8080 | grep -o 'class="badge">[^<]*'
+class="badge">v2-bind-mount
+
+$ sed -i '' 's/class="badge">v2-bind-mount/class="badge">v1/' app/index.html
+
+$ docker rm -f web-bind
+web-bind
+

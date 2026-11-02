@@ -1,0 +1,94 @@
+### 커스텀 이미지 빌드/실행 (2026-11-02 14:34)
+$ cat app/Dockerfile
+# 기존 베이스: 공식 NGINX 이미지(alpine 계열, 약 40MB로 가벼움)
+FROM nginx:alpine
+
+# 커스텀 포인트 1: 기본 환영 페이지를 우리 정적 페이지로 교체
+#   --chmod=644 : 호스트 파일 권한이 600이어도 nginx 워커(비root)가 읽을 수 있게 고정
+COPY --chmod=644 index.html /usr/share/nginx/html/index.html
+
+# 커스텀 포인트 2: 컨테이너가 80번 포트를 사용한다는 것을 문서화 (실제 개방은 -p 옵션이 담당)
+EXPOSE 80
+
+# 커스텀 포인트 3: 헬스체크 — nginx가 정상 응답하는지 10초마다 확인
+HEALTHCHECK --interval=10s --timeout=3s CMD wget -qO- http://localhost/ > /dev/null || exit 1
+
+$ docker build -t codyssey-web:v1 ./app
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 779B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/nginx:alpine
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [internal] load build context
+#4 transferring context: 920B done
+#4 DONE 0.0s
+
+#5 [1/2] FROM docker.io/library/nginx:alpine@sha256:785835ea65db4bba6f021acc0f3be91b0fef76a53fe41f8588c6698d2aed0606
+#5 resolve docker.io/library/nginx:alpine@sha256:785835ea65db4bba6f021acc0f3be91b0fef76a53fe41f8588c6698d2aed0606 done
+#5 DONE 0.0s
+
+#6 [2/2] COPY --chmod=644 index.html /usr/share/nginx/html/index.html
+#6 CACHED
+
+#7 exporting to image
+#7 exporting layers done
+#7 exporting manifest sha256:6ec7f1f1fd40098d3d7dbca322cd34ef0c90c3a0b3cb9ee1b6888c60a4dbb622 done
+#7 exporting config sha256:fc864c3b0e033b24bd1f3c31d478612d98414b2963666b49425b0dee356a1715 done
+#7 exporting attestation manifest sha256:a08479c803d5c8ee42c878e1f77014f85ca5aedec89a3f389d2166f359a86727 done
+#7 exporting manifest list sha256:fd6ffb09ca1d19e7c8c9fba96ffe525e5432c40ba4079bb195158e4038079eb3 done
+#7 naming to docker.io/library/codyssey-web:v1 done
+#7 unpacking to docker.io/library/codyssey-web:v1 done
+#7 DONE 0.0s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/ns23wz9u6ib4ei6esooek03gp
+
+$ docker images codyssey-web
+IMAGE             ID             DISK USAGE   CONTENT SIZE   EXTRA
+codyssey-web:v1   fd6ffb09ca1d       93.2MB         26.3MB        
+
+$ docker image history codyssey-web:v1 | head -8
+IMAGE          CREATED              CREATED BY                                       SIZE      COMMENT
+fd6ffb09ca1d   About a minute ago   HEALTHCHECK {Test:[CMD-SHELL wget -qO- http:…   0B        buildkit.dockerfile.v0
+<missing>      About a minute ago   EXPOSE [80/tcp]                                  0B        buildkit.dockerfile.v0
+<missing>      About a minute ago   COPY --chmod=644 index.html /usr/share/nginx…   24.6kB    buildkit.dockerfile.v0
+<missing>      11 days ago          RUN /bin/sh -c set -x     && apkArch="$(cat …   51.5MB    buildkit.dockerfile.v0
+<missing>      11 days ago          ENV ACME_VERSION=0.4.1                           0B        buildkit.dockerfile.v0
+<missing>      11 days ago          ENV NJS_RELEASE=1                                0B        buildkit.dockerfile.v0
+<missing>      11 days ago          ENV NJS_VERSION=1.0.2                            0B        buildkit.dockerfile.v0
+
+$ docker run -d --name web -p 8080:80 codyssey-web:v1
+12e7d8bb799182331bb4ee3dd00f001a18b5b4be66afd671447df4016ab8c407
+
+$ sleep 3; docker ps --filter name=web --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
+NAMES     IMAGE             STATUS                            PORTS
+web       codyssey-web:v1   Up 3 seconds (health: starting)   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+
+$ docker logs web | tail -5
+2026/11/02 05:34:28 [notice] 1#1: using the "epoll" event method
+2026/11/02 05:34:28 [notice] 1#1: nginx/1.31.8
+2026/11/02 05:34:28 [notice] 1#1: built by gcc 15.2.0 (Alpine 15.2.0) 
+2026/11/02 05:34:28 [notice] 1#1: OS: Linux 7.0.14-linuxkit
+2026/11/02 05:34:28 [notice] 1#1: getrlimit(RLIMIT_NOFILE): 1048576:1048576
+2026/11/02 05:34:28 [notice] 1#1: start worker processes
+2026/11/02 05:34:28 [notice] 1#1: start worker process 29
+2026/11/02 05:34:28 [notice] 1#1: start worker process 30
+2026/11/02 05:34:28 [notice] 1#1: start worker process 31
+2026/11/02 05:34:28 [notice] 1#1: start worker process 32
+2026/11/02 05:34:28 [notice] 1#1: start worker process 33
+2026/11/02 05:34:28 [notice] 1#1: start worker process 34
+2026/11/02 05:34:28 [notice] 1#1: start worker process 35
+2026/11/02 05:34:28 [notice] 1#1: start worker process 36
+10-listen-on-ipv6-by-default.sh: info: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+/docker-entrypoint.sh: Sourcing /docker-entrypoint.d/15-local-resolvers.envsh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/30-tune-worker-processes.sh
+/docker-entrypoint.sh: Configuration complete; ready for start up
+

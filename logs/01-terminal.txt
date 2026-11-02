@@ -1,0 +1,51 @@
+### 터미널 조작 로그 (2026-11-02 14:29)
+$ pwd
+/Users/gimnayeon/Developments/codyssey-workspace
+
+$ ls -la
+total 24
+drwxr-xr-x@ 11 gimnayeon  staff   352 11월  2 14:23 .
+drwxr-xr-x@ 62 gimnayeon  staff  1984 11월  2 14:15 ..
+drwxr-xr-x@ 12 gimnayeon  staff   384 11월  2 14:29 .git
+-rw-------@  1 gimnayeon  staff   126 11월  2 14:15 .gitignore
+drwx------@  4 gimnayeon  staff   128 11월  2 14:16 app
+drwx------@  3 gimnayeon  staff    96 11월  2 14:16 compose-multi
+drwx------@  4 gimnayeon  staff   128 11월  2 14:16 compose-single
+drwxr-xr-x   3 gimnayeon  staff    96 11월  2 14:29 logs
+-rw-------@  1 gimnayeon  staff  5281 11월  2 14:15 README.md
+drwxr-xr-x   2 gimnayeon  staff    64 11월  2 14:16 screenshots
+drwx------@  6 gimnayeon  staff   192 11월  2 14:16 scripts
+
+$ mkdir -p scratch
+
+$ cd scratch && pwd
+/Users/gimnayeon/Developments/codyssey-workspace/scratch
+
+$ touch scratch/empty.txt
+
+$ echo 'hello workspace' > scratch/hello.txt
+
+$ cat scratch/hello.txt
+hello workspace
+
+$ cp scratch/hello.txt scratch/hello-copy.txt
+
+$ mv scratch/hello-copy.txt scratch/renamed.txt
+
+$ ls -la scratch
+total 16
+drwxr-xr-x@  5 gimnayeon  staff  160 11월  2 14:29 .
+drwxr-xr-x@ 12 gimnayeon  staff  384 11월  2 14:29 ..
+-rw-r--r--@  1 gimnayeon  staff    0 11월  2 14:29 empty.txt
+-rw-r--r--@  1 gimnayeon  staff   16 11월  2 14:29 hello.txt
+-rw-r--r--@  1 gimnayeon  staff   16 11월  2 14:29 renamed.txt
+
+$ rm scratch/empty.txt
+
+$ ls -la scratch
+total 16
+drwxr-xr-x@  4 gimnayeon  staff  128 11월  2 14:29 .
+drwxr-xr-x@ 12 gimnayeon  staff  384 11월  2 14:29 ..
+-rw-r--r--@  1 gimnayeon  staff   16 11월  2 14:29 hello.txt
+-rw-r--r--@  1 gimnayeon  staff   16 11월  2 14:29 renamed.txt
+

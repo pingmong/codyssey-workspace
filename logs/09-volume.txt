@@ -1,0 +1,75 @@
+### Docker 볼륨 영속성 검증 (2026-11-02 14:34)
+$ docker volume create codyssey-data
+codyssey-data
+
+$ docker volume ls
+DRIVER    VOLUME NAME
+local     0d39cf0b0f1a274c555f240701d8e701005052404df14c4bdc503f42835b6e93
+local     2b1acbbd570bde0f4c37b2cfda32589c76bdcf3dc39d0d48aad4433d63eb6caf
+local     6b3a762fa945c8a363bf2c6db766c37310913f31132cab90ec712803bfa49767
+local     7c69fb30f5a6b5953795891e8c3ccd6179d5c32ff6ad800e6492e977d4959239
+local     010de1f83c5a47d38e6de85fa1a2e637da10f55379911494f5a9a8d3565fbeb3
+local     15cae7a82a79ecb078c9a5243b3069f71e47a16580f50acea0be003c14cfc524
+local     100e8b3ced5385b28de4e908bbe9493819be25e0acca6b67108846d8325f8c43
+local     220b9dfa0f168cef9838cfd82dab78ffcfacdbcc69de1bb9dc0ce42a4c731df0
+local     547ed1086d37aced0acb09a6e992fac76404ea10591ee07b685b166a2ee58bc9
+local     3760b256e0aeedcc17c02a8374f06e5945709ca557dc17d48c14876fdef40b6d
+local     13353d8c40a9c144b6ed2c6f21923135a26f07285372ea539c99cf2164de591b
+local     25121e271d02cd956d93afcab70718f423efd7132db53e3c1457b0c450985e19
+local     517339a40eb1aba373da0eb4a0e50f615664fef3f306250a518d674f0a28080e
+local     a3b74a54423c91d3f0bc209be1c495de6e486d4b5e4babe9f943a45e0a85968d
+local     apache-kafka-with-java_kafka-data
+local     b8435dfa4713dc30b8d9cc077ca9cff9a46b563f05d9e0a97e93adb6bbe5afab
+local     c7604d7f0aaad76ccb7e39eb7f9295e1b0ffaddb510a4a5a6e953680dc9749fd
+local     ca3a509333f151acae13052d2fef927c6c9bc5cc41db13ec1a41a92e2341d2b6
+local     codyssey-data
+local     d93856c2ee53d9224acaf9c5f111ebddf45be5177872b4888d11b0fc320f3ee0
+local     ded4b000366b82060cdc7e34ce6f69b365af88518049bd228e768356acc31a79
+local     docker_postgres-config
+local     docker_postgres-data
+local     docker_postgres-init
+local     e977ca2c1901511bb95a86051c214793d9e0d1863d45f6fa1fe920e32ae72d9c
+local     f1350dff8a9561ac84d2954f7646ddf64aac3466034e24bba3051eac4697b8fd
+local     fa4464c1598edae52cfa063466747e944282747bea4f40df68f8dc0e8b91d883
+local     fb6ec21e420f2f423239ef9839eb5191099434f4eb556ceaa070955570b2ca72
+local     java_mysql_data
+local     kafka-event-store_postgres_data
+local     rag-vactordb_pgvector_data
+
+$ docker volume inspect codyssey-data
+[
+    {
+        "CreatedAt": "2026-11-02T05:30:53Z",
+        "Driver": "local",
+        "Labels": null,
+        "Mountpoint": "/var/lib/docker/volumes/codyssey-data/_data",
+        "Name": "codyssey-data",
+        "Options": null,
+        "Scope": "local"
+    }
+]
+
+## [1] 컨테이너 A 가 볼륨에 데이터 기록
+$ docker run --rm --name writer -v codyssey-data:/data alpine sh -c 'echo "written at $(date)" >> /data/persist.txt; cat /data/persist.txt'
+written at Mon Nov  2 05:30:56 UTC 2026
+written at Mon Nov  2 05:33:00 UTC 2026
+written at Mon Nov  2 05:34:34 UTC 2026
+
+## [2] 컨테이너 A 삭제됨 (--rm) → 볼륨만 남음
+$ docker ps -a --filter name=writer
+CONTAINER ID   IMAGE     COMMAND   CREATED   STATUS    PORTS     NAMES
+
+## [3] 새 컨테이너 B 가 같은 볼륨을 붙여서 데이터 확인
+$ docker run --rm --name reader -v codyssey-data:/data alpine cat /data/persist.txt
+written at Mon Nov  2 05:30:56 UTC 2026
+written at Mon Nov  2 05:33:00 UTC 2026
+written at Mon Nov  2 05:34:34 UTC 2026
+
+## [비교] 볼륨 없이 쓴 데이터는 컨테이너와 함께 사라짐
+$ docker run --rm alpine sh -c 'echo gone > /data-no-vol.txt; cat /data-no-vol.txt'
+gone
+
+$ docker run --rm alpine sh -c 'cat /data-no-vol.txt || echo "(파일 없음: 컨테이너 삭제와 함께 사라짐)"'
+cat: can't open '/data-no-vol.txt': No such file or directory
+(파일 없음: 컨테이너 삭제와 함께 사라짐)
+

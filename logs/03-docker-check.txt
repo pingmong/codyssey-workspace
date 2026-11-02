@@ -1,0 +1,42 @@
+### Docker 설치 점검 (2026-11-02 14:30)
+$ docker --version
+Docker version 29.8.1, build 4a63305
+
+$ docker compose version
+Docker Compose version v5.5.1
+
+$ docker info --format 'Server Version: {{.ServerVersion}} / OS: {{.OperatingSystem}} / CPUs: {{.NCPU}} / Mem: {{.MemTotal}}'
+Server Version: 29.8.1 / OS: Docker Desktop / CPUs: 8 / Mem: 8319770624
+
+$ docker info | head -30
+Client:
+ Version:    29.8.1
+ Context:    desktop-linux
+ Debug Mode: false
+ Plugins:
+  agent: Docker AI Agent Runner (Docker Inc.)
+    Version:  v1.141.0
+    Path:     /Users/gimnayeon/.docker/cli-plugins/docker-agent
+  ai: Docker AI Agent - Ask Gordon (Docker Inc.)
+    Version:  v1.31.0
+    Path:     /Users/gimnayeon/.docker/cli-plugins/docker-ai
+  buildx: Docker Buildx (Docker Inc.)
+    Version:  v0.37.1
+    Path:     /Users/gimnayeon/.docker/cli-plugins/docker-buildx
+  compose: Docker Compose (Docker Inc.)
+    Version:  v5.5.1
+    Path:     /Users/gimnayeon/.docker/cli-plugins/docker-compose
+  debug: Get a shell into any image or container (Docker Inc.)
+    Version:  0.0.47
+    Path:     /Users/gimnayeon/.docker/cli-plugins/docker-debug
+  desktop: Docker Desktop commands (Docker Inc.)
+    Version:  v0.4.4
+    Path:     /Users/gimnayeon/.docker/cli-plugins/docker-desktop
+  dhi: CLI for managing Docker Hardened Images (Docker Inc.)
+    Version:  v0.0.7
+    Path:     /Users/gimnayeon/.docker/cli-plugins/docker-dhi
+  extension: Manages Docker extensions (Docker Inc.)
+    Version:  v0.2.31
+    Path:     /Users/gimnayeon/.docker/cli-plugins/docker-extension
+  init: Creates Docker-related starter files for your project (Docker Inc.)
+

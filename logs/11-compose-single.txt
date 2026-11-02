@@ -1,0 +1,87 @@
+### Compose 단일 서비스 (2026-11-02 14:39)
+$ cat compose-single/docker-compose.yml
+# 보너스 1: 단일 서비스 Compose
+# docker run -d --name web -p 8080:80 codyssey-web  ← 이 명령을 "문서화된 설정"으로 옮긴 것
+services:
+  web:
+    build: ../app            # ../app/Dockerfile 로 이미지 빌드
+    image: codyssey-web:compose
+    container_name: compose-web
+    ports:
+      - "${WEB_PORT:-8080}:80"   # 보너스 4: 환경 변수로 호스트 포트 변경 (기본 8080)
+
+$ cd compose-single && docker compose up -d --build
+ Image codyssey-web:compose Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 560B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 779B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/nginx:alpine
+#3 DONE 0.0s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 2B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 920B done
+#5 DONE 0.0s
+
+#6 [1/2] FROM docker.io/library/nginx:alpine@sha256:785835ea65db4bba6f021acc0f3be91b0fef76a53fe41f8588c6698d2aed0606
+#6 resolve docker.io/library/nginx:alpine@sha256:785835ea65db4bba6f021acc0f3be91b0fef76a53fe41f8588c6698d2aed0606 done
+#6 DONE 0.0s
+
+#7 [2/2] COPY --chmod=644 index.html /usr/share/nginx/html/index.html
+#7 CACHED
+
+#8 exporting to image
+#8 exporting layers done
+#8 exporting manifest sha256:7fd4b44ae63ff9eccdffedef3809549e6a0f524a7e5cc63d6b5cd1d796a2591e done
+#8 exporting config sha256:b4de9017c18b8a748d526b9479c370481b61f527788266c6502eef8536c3b883 done
+#8 exporting attestation manifest sha256:9fef32e35e59f103f4f1ff0e94c674295909701624514b3f7d7b8a4aacc715b8 done
+#8 exporting manifest list sha256:4ca07da58fafe207df0c798fad07eec166a3b0fbc0852217854788dbe6bb13fd done
+#8 naming to docker.io/library/codyssey-web:compose done
+#8 unpacking to docker.io/library/codyssey-web:compose done
+#8 DONE 0.0s
+
+#9 resolving provenance for metadata file
+#9 DONE 0.0s
+ Image codyssey-web:compose Built 
+ Network compose-single_default Creating 
+ Network compose-single_default Creating 
+ Network compose-single_default Created 
+ Network compose-single_default Created 
+ Container compose-web Creating 
+ Container compose-web Created 
+ Container compose-web Starting 
+ Container compose-web Started 
+
+$ cd compose-single && docker compose ps
+NAME          IMAGE                  COMMAND                   SERVICE   CREATED                  STATUS                                     PORTS
+compose-web   codyssey-web:compose   "/docker-entrypoint.…"   web       Less than a second ago   Up Less than a second (health: starting)   0.0.0.0:8080->80/tcp, [::]:8080->80/tcp
+
+$ curl -s -o /dev/null -w 'HTTP %{http_code} on :8080\n' http://localhost:8080
+HTTP 200 on :8080
+
+$ cd compose-single && docker compose logs --tail 5
+compose-web  | 2026/11/02 05:39:48 [notice] 1#1: start worker process 34
+compose-web  | 2026/11/02 05:39:48 [notice] 1#1: start worker process 35
+compose-web  | 2026/11/02 05:39:48 [notice] 1#1: start worker process 36
+compose-web  | 2026/11/02 05:39:48 [notice] 1#1: start worker process 37
+compose-web  | 192.168.65.1 - - [02/Nov/2026:05:39:48 +0000] "GET / HTTP/1.1" 200 881 "-" "curl/8.7.1" "-"
+
+$ cd compose-single && docker compose down
+ Container compose-web Stopping 
+ Container compose-web Stopped 
+ Container compose-web Removing 
+ Container compose-web Removed 
+ Network compose-single_default Removing 
+ Network compose-single_default Removed 
+
+$ cd compose-single && docker compose ps
+NAME      IMAGE     COMMAND   SERVICE   CREATED   STATUS    PORTS
+

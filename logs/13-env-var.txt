@@ -1,0 +1,39 @@
+### 환경 변수 활용 (2026-11-02 14:39)
+$ cat compose-single/.env.example
+# 복사해서 .env 로 저장하면 docker compose 가 자동으로 읽습니다.
+WEB_PORT=9090
+
+$ cp compose-single/.env.example compose-single/.env
+
+$ cd compose-single && docker compose config | grep -A2 ports
+    ports:
+      - mode: ingress
+        target: 80
+
+$ cd compose-single && docker compose up -d
+ Network compose-single_default Creating 
+ Network compose-single_default Creating 
+ Network compose-single_default Created 
+ Network compose-single_default Created 
+ Container compose-web Creating 
+ Container compose-web Created 
+ Container compose-web Starting 
+ Container compose-web Started 
+
+$ curl -s -o /dev/null -w 'HTTP %{http_code} on :9090 (env WEB_PORT)\n' http://localhost:9090
+HTTP 200 on :9090 (env WEB_PORT)
+
+$ cd compose-single && docker compose down
+ Container compose-web Stopping 
+ Container compose-web Stopped 
+ Container compose-web Removing 
+ Container compose-web Removed 
+ Network compose-single_default Removing 
+ Network compose-single_default Removed 
+
+$ rm compose-single/.env
+
+## Dockerfile 쪽 환경 변수: docker run -e 로 주입
+$ docker run --rm -e APP_MODE=production alpine sh -c 'echo APP_MODE=$APP_MODE'
+APP_MODE=production
+

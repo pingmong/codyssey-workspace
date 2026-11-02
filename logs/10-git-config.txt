@@ -1,0 +1,29 @@
+### Git 설정 (2026-11-02 14:39)
+$ git --version
+git version 2.50.1 (Apple Git-155)
+
+$ git config --list --show-origin | grep -E 'user\.|init\.|core\.editor|credential' | sed -E 's/(token|password)=.*/\1=****/'
+file:/Library/Developer/CommandLineTools/usr/share/git-core/gitconfig	credential.helper=osxkeychain
+file:/Library/Developer/CommandLineTools/usr/share/git-core/gitconfig	init.defaultbranch=main
+file:/Users/gimnayeon/.gitconfig	user.name=pingmong
+file:/Users/gimnayeon/.gitconfig	user.email=****@**** (마스킹)
+file:/Users/gimnayeon/.gitconfig	user.signingkey=**** (마스킹)
+file:/Users/gimnayeon/.gitconfig	core.editor=code --wait
+file:/Users/gimnayeon/.gitconfig	init.defaultbranch=main
+file:/Users/gimnayeon/.gitconfig	init.defaultbranch=main
+file:/Users/gimnayeon/.gitconfig	init.templatedir=/Users/gimnayeon/.config/wisoft/development-preferences/env/git/template
+file:/Users/gimnayeon/.gitconfig	credential.https://github.com.helper=
+file:/Users/gimnayeon/.gitconfig	credential.https://github.com.helper=!/opt/homebrew/bin/gh auth git-credential
+file:/Users/gimnayeon/.gitconfig	credential.https://gist.github.com.helper=
+file:/Users/gimnayeon/.gitconfig	credential.https://gist.github.com.helper=!/opt/homebrew/bin/gh auth git-credential
+
+$ git remote -v
+origin	https://github.com/pingmong/codyssey-workspace.git (fetch)
+origin	https://github.com/pingmong/codyssey-workspace.git (push)
+
+$ git branch --show-current
+main
+
+$ git log --oneline | head -10
+8a0e310 chore: 워크스페이스 구축 미션 초기 구조
+

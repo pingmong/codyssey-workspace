@@ -1,0 +1,44 @@
+### 권한 실습 로그 (2026-11-02 14:29)
+$ mkdir -p scratch/perm-dir && echo 'echo run ok' > scratch/perm.sh
+
+## [변경 전]
+$ ls -l scratch/perm.sh
+-rw-r--r--@ 1 gimnayeon  staff  12 11월  2 14:29 scratch/perm.sh
+
+$ ls -ld scratch/perm-dir
+drwxr-xr-x@ 2 gimnayeon  staff  64 11월  2 14:29 scratch/perm-dir
+
+$ ./scratch/perm.sh || echo '→ 실행 실패: 실행 권한(x)이 없음'
+scripts/01-terminal.sh: line 13: ./scratch/perm.sh: Permission denied
+→ 실행 실패: 실행 권한(x)이 없음
+
+## [파일: chmod 755 → rwxr-xr-x]
+$ chmod 755 scratch/perm.sh
+
+$ ls -l scratch/perm.sh
+-rwxr-xr-x@ 1 gimnayeon  staff  12 11월  2 14:29 scratch/perm.sh
+
+$ ./scratch/perm.sh
+run ok
+
+## [파일: chmod 644 → rw-r--r--, 다시 실행 불가]
+$ chmod 644 scratch/perm.sh
+
+$ ls -l scratch/perm.sh
+-rw-r--r--@ 1 gimnayeon  staff  12 11월  2 14:29 scratch/perm.sh
+
+$ ./scratch/perm.sh || echo '→ 다시 실행 실패: 644 는 rw-r--r-- (x 없음)'
+scripts/01-terminal.sh: line 13: ./scratch/perm.sh: Permission denied
+→ 다시 실행 실패: 644 는 rw-r--r-- (x 없음)
+
+## [디렉토리: chmod 700 → 소유자만 접근]
+$ chmod 700 scratch/perm-dir
+
+$ ls -ld scratch/perm-dir
+drwx------@ 2 gimnayeon  staff  64 11월  2 14:29 scratch/perm-dir
+
+$ chmod 755 scratch/perm-dir
+
+$ ls -ld scratch/perm-dir
+drwxr-xr-x@ 2 gimnayeon  staff  64 11월  2 14:29 scratch/perm-dir
+

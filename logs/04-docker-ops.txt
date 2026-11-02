@@ -1,0 +1,103 @@
+### Docker 기본 운영 명령 (2026-11-02 14:30)
+$ docker pull alpine:3.20
+3.20: Pulling from library/alpine
+3f26bc2dec0b: Pulling fs layer
+3f26bc2dec0b: Download complete
+3f26bc2dec0b: Pull complete
+cee42a41056b: Download complete
+8b093306b817: Download complete
+Digest: sha256:d9e853e87e55526f6b2917df91a2115c36dd7c696a35be12163d44e6e2a4b6bc
+Status: Downloaded newer image for alpine:3.20
+docker.io/library/alpine:3.20
+
+$ docker images
+IMAGE                                                                       ID             DISK USAGE   CONTENT SIZE   EXTRA
+alpine:3.20                                                                 d9e853e87e55       13.7MB         4.17MB        
+apache/kafka:4.3.1                                                          77e3df905404        690MB          239MB   U    
+docker/desktop-cloud-provider-kind:v0.6.0                                   46d51b990e97        587MB          156MB   U    
+docker/desktop-cloud-provider-kind:v0.7.0                                   f078b9ccf478        601MB          158MB        
+docker/desktop-containerd-registry-mirror:v0.0.4                            1de142695bb0       51.1MB         16.3MB   U    
+docker/desktop-storage-provisioner:v2.0                                     115d77efe6e2         56MB         16.2MB   U    
+docker/desktop-vpnkit-controller:dc331cb22850be0cdd97c84a9cfecaf44a1afb6e   7ecf567ea070       44.7MB         9.71MB   U    
+envoyproxy/envoy:v1.36.7                                                    29d778ba078e        239MB         60.5MB        
+hello-world:latest                                                          c567b231f656       22.6kB         10.3kB   U    
+kindest/node:v1.36.1                                                        3489c7674813       1.27GB          350MB   U    
+postgres:16-alpine                                                          0cefaabd882e        411MB          115MB        
+postgres:latest                                                             81f32a88ec56        639MB          154MB   U    
+registry.k8s.io/coredns/coredns:v1.11.3                                     9caabbf6238b       81.8MB         16.9MB   U    
+registry.k8s.io/etcd:3.5.15-0                                               a6dc63e6e8cf        209MB         66.4MB   U    
+registry.k8s.io/kube-apiserver:v1.30.5                                      7746ea55ad74        146MB         29.9MB   U    
+registry.k8s.io/kube-controller-manager:v1.30.5                             bbd15d267294        139MB         28.4MB   U    
+registry.k8s.io/kube-proxy:v1.30.5                                          fa20f91153b9        117MB         25.6MB   U    
+registry.k8s.io/kube-scheduler:v1.30.5                                      62c91756a3c9       81.4MB         17.6MB   U    
+registry.k8s.io/pause:3.9                                                   7031c1b28338        786kB          266kB   U    
+ubuntu:latest                                                               6a06111c3b0a        181MB         44.9MB   U    
+
+$ docker ps
+CONTAINER ID   IMAGE             COMMAND                   CREATED         STATUS         PORTS                     NAMES
+b61a55cf427d   ubuntu            "sleep 600"               3 seconds ago   Up 3 seconds                             ubu-keep
+32c95d1e9c67   postgres:latest   "docker-entrypoint.s…"   20 months ago   Up 3 days      0.0.0.0:15432->5432/tcp   postgres
+
+$ docker ps -a
+CONTAINER ID   IMAGE                COMMAND                    CREATED         STATUS                     PORTS                     NAMES
+b61a55cf427d   ubuntu               "sleep 600"                3 seconds ago   Up 3 seconds                                         ubu-keep
+fef726abf879   ubuntu               "bash -c 'echo \"[con…"   3 seconds ago   Exited (0) 3 seconds ago                             ubu-once
+09545e79392a   hello-world          "/hello"                   4 seconds ago   Exited (0) 3 seconds ago                             hello
+f18681e2b0dc   ubuntu               "/bin/bash"                2 days ago      Exited (0) 2 days ago                                heuristic_aryabhata
+a63049facb3c   apache/kafka:4.3.1   "/__cacert_entrypoin…"    2 months ago    Exited (143) 2 days ago                              my-kafka
+32c95d1e9c67   postgres:latest      "docker-entrypoint.s…"    20 months ago   Up 3 days                  0.0.0.0:15432->5432/tcp   postgres
+
+$ docker logs hello
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (arm64v8)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+
+
+$ docker stats --no-stream
+CONTAINER ID   NAME       CPU %     MEM USAGE / LIMIT     MEM %     NET I/O         BLOCK I/O        PIDS
+b61a55cf427d   ubu-keep   0.00%     3.66MiB / 7.748GiB    0.05%     1.17kB / 126B   0B / 0B          1
+32c95d1e9c67   postgres   0.01%     72.55MiB / 7.748GiB   0.91%     1.75kB / 126B   54.2MB / 4.1kB   6
+
+$ docker stop ubu-keep
+ubu-keep
+
+$ docker ps -a --filter name=ubu-keep --format 'table {{.Names}}\t{{.Status}}'
+NAMES      STATUS
+ubu-keep   Exited (137) Less than a second ago
+
+$ docker start ubu-keep
+ubu-keep
+
+$ docker ps --filter name=ubu-keep --format 'table {{.Names}}\t{{.Status}}'
+NAMES      STATUS
+ubu-keep   Up Less than a second
+
+$ docker rm -f hello ubu-once ubu-keep
+hello
+ubu-once
+ubu-keep
+
+$ docker ps -a
+CONTAINER ID   IMAGE                COMMAND                   CREATED         STATUS                    PORTS                     NAMES
+f18681e2b0dc   ubuntu               "/bin/bash"               2 days ago      Exited (0) 2 days ago                               heuristic_aryabhata
+a63049facb3c   apache/kafka:4.3.1   "/__cacert_entrypoin…"   2 months ago    Exited (143) 2 days ago                             my-kafka
+32c95d1e9c67   postgres:latest      "docker-entrypoint.s…"   20 months ago   Up 3 days                 0.0.0.0:15432->5432/tcp   postgres
+

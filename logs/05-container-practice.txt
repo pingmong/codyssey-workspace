@@ -1,0 +1,76 @@
+### 컨테이너 실행 실습 (2026-11-02 14:30)
+## hello-world
+$ docker run --name hello hello-world
+Unable to find image 'hello-world:latest' locally
+latest: Pulling from library/hello-world
+58dee6a49ef1: Pulling fs layer
+58dee6a49ef1: Download complete
+58dee6a49ef1: Pull complete
+c3bdf82c34d1: Download complete
+Digest: sha256:c567b231f65614688711a75f31518a064258a51d442117a3e771a3a8fdba78ef
+Status: Downloaded newer image for hello-world:latest
+
+Hello from Docker!
+This message shows that your installation appears to be working correctly.
+
+To generate this message, Docker took the following steps:
+ 1. The Docker client contacted the Docker daemon.
+ 2. The Docker daemon pulled the "hello-world" image from the Docker Hub.
+    (arm64v8)
+ 3. The Docker daemon created a new container from that image which runs the
+    executable that produces the output you are currently reading.
+ 4. The Docker daemon streamed that output to the Docker client, which sent it
+    to your terminal.
+
+To try something more ambitious, you can run an Ubuntu container with:
+ $ docker run -it ubuntu bash
+
+Share images, automate workflows, and more with a free Docker ID:
+ https://hub.docker.com/
+
+For more examples and ideas, visit:
+ https://docs.docker.com/get-started/
+
+
+## ubuntu 컨테이너 내부 명령 (docker run → 1회성 실행 후 종료)
+$ docker run --name ubu-once ubuntu bash -c 'echo "[container] hostname=$(hostname)"; cat /etc/os-release | head -2; ls /'
+[container] hostname=fef726abf879
+PRETTY_NAME="Ubuntu 26.04.1 LTS"
+NAME="Ubuntu"
+bin
+boot
+dev
+etc
+home
+lib
+media
+mnt
+opt
+proc
+root
+run
+sbin
+srv
+sys
+tmp
+usr
+var
+
+## ubuntu 컨테이너 유지 (-d + sleep) 후 exec 로 진입
+$ docker run -d --name ubu-keep ubuntu sleep 600
+b61a55cf427d567520842e7bda8c443fee5c3337b57f9e54f5fcd7be59234fd5
+
+$ docker exec ubu-keep bash -c 'echo "[exec] whoami=$(whoami)"; echo hello-from-exec > /tmp/note.txt; cat /tmp/note.txt'
+[exec] whoami=root
+hello-from-exec
+
+$ docker exec ubu-keep ls -l /tmp
+total 4
+-rw-r--r-- 1 root root 16 Nov  2 05:30 note.txt
+
+## 종료/유지 차이 관찰: ubu-once 는 Exited, ubu-keep 은 Up
+$ docker ps -a --filter name=ubu- --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Command}}'
+NAMES      IMAGE     STATUS                              COMMAND
+ubu-keep   ubuntu    Up Less than a second               "sleep 600"
+ubu-once   ubuntu    Exited (0) Less than a second ago   "bash -c 'echo \"[con…"
+
